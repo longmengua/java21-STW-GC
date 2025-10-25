@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- 繼承 parent -->
     <parent>
         <groupId>com.example</groupId>
         <artifactId>project-parent</artifactId>
@@ -12,35 +15,55 @@
 
     <artifactId>gc-stw</artifactId>
     <name>gc-stw</name>
-    <description>Demo for STW of GC</description>
+    <description>Demo for GC STW monitoring</description>
 
-    <!-- groupId/version 可以省略（會繼承 parent 的）若你需要也可以指定 -->
-    <!-- 若 parent 已提供 java.version 等 property，可直接使用 -->
-
+    <!-- 依賴 -->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <!-- 版本可省略，會從 parent 的 dependencyManagement 繼承（若有設定） -->
             <optional>true</optional>
         </dependency>
-
-        <!-- 其它依賴 -->
     </dependencies>
 
+    <!-- build 設定 -->
     <build>
         <plugins>
-            <!-- 若子模組要使用 pre-config 的 plugin，直接引用，不需重複版本配置 -->
+            <!-- 1. Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <!-- 若 parent pluginManagement 已設定版本與 annotationProcessorPaths，這裡可以只留 configuration 或完全省略 -->
+                <!-- 若 parent pluginManagement 已設定版本，可省略版本 -->
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                        <path>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-configuration-processor</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!-- 2. Spring Boot Maven Plugin (必須啟用，生成可執行 jar) -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- 指定主程式 class -->
+                    <mainClass>com.example.gc_stw.GcStwApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
+
 </project>
